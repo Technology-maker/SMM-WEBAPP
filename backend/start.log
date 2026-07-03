@@ -1,0 +1,11 @@
+
+> smm-panel-backend@1.0.0 start
+> node server.js
+
+Server running on port 5000
+MongoDB connected: 127.0.0.1
+[0mGET /api/auth/me [33m401[0m 100.864 ms - 65[0m
+[0mGET /api/auth/me [33m401[0m 1.837 ms - 65[0m
+[0mGET /api/auth/me [33m401[0m 1.309 ms - 65[0m
+[0mGET /api/auth/me [33m401[0m 3.101 ms - 65[0m
+[0mGET /api/auth/me [33m401[0m 10.203 ms - 65[0m
