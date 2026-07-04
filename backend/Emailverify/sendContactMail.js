@@ -1,29 +1,34 @@
-import nodemailer from "nodemailer";
+import axios from "axios";
 import dotenv from "dotenv";
 dotenv.config();
 
-const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, MAIL_FROM } = process.env;
-
-const transporter = nodemailer.createTransport({
-    host: SMTP_HOST,                   // smtp-relay.brevo.com
-    port: Number(SMTP_PORT || 587),    // 587
-    secure: Number(SMTP_PORT) === 465, // false for 587 (STARTTLS)
-    auth: {
-        user: SMTP_USER, // Brevo SMTP login, e.g. a7292e001@smtp-brevo.com
-        pass: SMTP_PASS, // Brevo SMTP key
-    },
-    family: 4, // force IPv4 - fixes ETIMEDOUT/CONN on Render (IPv6 resolution issue)
-    connectionTimeout: 10000, // fail fast (10s) instead of hanging
-});
+const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
 export const sendContactMail = async ({ name, email, subject, message }) => {
-    const mailOptions = {
-        from: `"${name}" <${MAIL_FROM}>`, // must be a verified sender in Brevo
-        to: MAIL_FROM,                    // where you want to receive contact messages
-        replyTo: email,                   // so replying goes to the actual user
+    const payload = {
+        sender: {
+            name: "SMM Panel Contact Form",
+            email: process.env.MAIL_FROM, // must be a verified sender in Brevo
+        },
+        to: [
+            {
+                email: process.env.MAIL_FROM, // where you want to receive contact messages
+            },
+        ],
+        replyTo: {
+            email: email, // so replying goes to the actual visitor
+            name: name,
+        },
         subject: subject,
-        text: `📩 New message from = ${name} \n\n 👤User Email = (${email}) \n\n 💭Message =  ${message}`,
+        textContent: `📩 New message from = ${name} \n\n 👤User Email = (${email}) \n\n 💭Message =  ${message}`,
     };
 
-    await transporter.sendMail(mailOptions);
+    await axios.post(BREVO_API_URL, payload, {
+        headers: {
+            "api-key": process.env.SMTP_PASS,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+        timeout: 10000, // fail fast instead of hanging
+    });
 };
