@@ -2,21 +2,23 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
 
+const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, MAIL_FROM } = process.env;
+
 const transporter = nodemailer.createTransport({
-    host: process.env.BREVO_SMTP_HOST || "smtp-relay.brevo.com",
-    port: Number(process.env.BREVO_SMTP_PORT || 587),
-    secure: false, // Brevo uses STARTTLS on port 587, not SSL
+    host: SMTP_HOST,                   // smtp-relay.brevo.com
+    port: Number(SMTP_PORT || 587),    // 587
+    secure: Number(SMTP_PORT) === 465, // false for 587 (STARTTLS)
     auth: {
-        user: process.env.BREVO_SMTP_USER, // your Brevo SMTP login (looks like xxxxx@smtp-brevo.com)
-        pass: process.env.BREVO_SMTP_PASS, // your Brevo SMTP key (not your account password)
+        user: SMTP_USER, // Brevo SMTP login, e.g. a7292e001@smtp-brevo.com
+        pass: SMTP_PASS, // Brevo SMTP key
     },
 });
 
 export const sendContactMail = async ({ name, email, subject, message }) => {
     const mailOptions = {
-        from: `"${name}" <${process.env.MAIL_FROM || process.env.BREVO_SENDER_EMAIL}>`, // must be a verified sender in Brevo
-        to: process.env.CONTACT_RECEIVER_EMAIL || process.env.MAIL_FROM,
-        replyTo: email,
+        from: `"${name}" <${MAIL_FROM}>`, // must be a verified sender in Brevo
+        to: MAIL_FROM,                    // where you want to receive contact messages
+        replyTo: email,                   // so replying goes to the actual user
         subject: subject,
         text: `📩 New message from = ${name} \n\n 👤User Email = (${email}) \n\n 💭Message =  ${message}`,
     };
