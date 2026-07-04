@@ -1,24 +1,18 @@
-import nodemailer from "nodemailer";
+import axios from "axios";
 import dotenv from "dotenv";
 dotenv.config();
 
-
-const transporter = nodemailer.createTransport({
-    host: "smtp-relay.brevo.com",
-    port: 587,
-    secure: false,
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-    },
-});
+const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
 export const sendOTPMail = async (otp, email) => {
-    await transporter.sendMail({
-        from: `"SMM Support" <noreply@shreevinayak.shop>`,
-        to: email,
+    const payload = {
+        sender: {
+            name: "SMM Support",
+            email: process.env.MAIL_FROM, // must be a verified sender in Brevo
+        },
+        to: [{ email }],
         subject: "Password Reset OTP",
-        html: `
+        htmlContent: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
         <h2>Password Reset Request</h2>
 
@@ -46,5 +40,14 @@ export const sendOTPMail = async (otp, email) => {
         <p>Regards,<br>SMM Support Team</p>
       </div>
     `,
+    };
+
+    await axios.post(BREVO_API_URL, payload, {
+        headers: {
+            "api-key": process.env.BREVO_API_URL,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+        timeout: 10000, // fail fast instead of hanging
     });
 };
