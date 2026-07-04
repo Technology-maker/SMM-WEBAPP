@@ -12,6 +12,8 @@ const transporter = nodemailer.createTransport({
         user: SMTP_USER, // Brevo SMTP login, e.g. a7292e001@smtp-brevo.com
         pass: SMTP_PASS, // Brevo SMTP key
     },
+    family: 4, // force IPv4 - fixes ETIMEDOUT/CONN on Render (IPv6 resolution issue)
+    connectionTimeout: 10000, // fail fast (10s) instead of hanging
 });
 
 export const sendContactMail = async ({ name, email, subject, message }) => {
