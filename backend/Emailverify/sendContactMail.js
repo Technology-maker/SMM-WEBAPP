@@ -25,7 +25,7 @@ export const sendContactMail = async ({ name, email, subject, message }) => {
 
     await axios.post(BREVO_API_URL, payload, {
         headers: {
-            "api-key": process.env.SMTP_PASS,
+            "api-key": process.env.BREVO_API_URL,
             "Content-Type": "application/json",
             "Accept": "application/json",
         },
