@@ -12,7 +12,7 @@ export const sendContactMail = async ({ name, email, subject, message }) => {
         },
         to: [
             {
-                email: process.env.MAIL_FROM, // where you want to receive contact messages
+                email: process.env.EMAIL_USER, // where you want to receive contact messages
             },
         ],
         replyTo: {
