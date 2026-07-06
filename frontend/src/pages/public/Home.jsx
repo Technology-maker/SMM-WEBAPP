@@ -138,7 +138,7 @@ const Home = () => (
 
         {/* Wordmark */}
         <span className="text-xl font-black tracking-tight">
-          <span className="home-word">BOOST GURU </span>
+          <span className="home-word">BOOST </span>
           <span
             style={{
               background: "linear-gradient(90deg, #a78bfa, #c4b5fd)",
@@ -147,7 +147,7 @@ const Home = () => (
               backgroundClip: "text",
             }}
           >
-            SMM
+            GURU
           </span>
         </span>
       </Link>
@@ -164,11 +164,18 @@ const Home = () => (
           <p className="mb-4 inline-flex rounded-full border border-mint/30 bg-mint/10 px-3 py-1 text-sm text-mint">
             Social growth operations in one secure panel
           </p>
-          <h1 className="max-w-3xl text-4xl font-black leading-tight sm:text-6xl">
-            SMM Pulse
-          </h1>
+          <div className="sparkle-wrap">
+            <h1 className="max-w-3xl text-4xl font-black leading-tight sm:text-6xl text-shine">
+              Boost Guru SMM
+            </h1>
+            <span className="spark spark-1">✦</span>
+            <span className="spark spark-2">✦</span>
+            <span className="spark spark-3">✦</span>
+            <span className="spark spark-4">✦</span>
+            <span className="spark spark-5">✦</span>
+          </div>
           <p className="mt-5 max-w-2xl text-lg text-slate-300">
-            Order services, manage wallet deposits, track delivery, and run admin operations from a fast dark-mode panel built for social media marketing teams.
+            📸 Instagram • 🎬 YouTube • 📘 Facebook • ✈️ Telegram • 🎧 Spotify growth, all in one panel. 🚀
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link className="btn-primary" to="/register">
@@ -194,13 +201,13 @@ const Home = () => (
             ))}
           </div>
           <div className="mt-5 space-y-3">
-            {["Instagram Followers", "YouTube Views", "TikTok Likes"].map((name, index) => (
+            {["Instagram Indian Followers", "YouTube Views", "Instagram Indian Comments"].map((name, index) => (
               <div key={name} className="flex items-center justify-between rounded-lg border border-white/10 bg-ink/50 p-3">
                 <div>
                   <p className="font-semibold">{name}</p>
                   <p className="text-xs text-slate-500">Processing speed: {["Fast", "Stable", "Instant"][index]}</p>
                 </div>
-                <p className="text-sm font-bold text-mint">₹{[70, 50, 20][index]}/1k</p>
+                <p className="text-sm font-bold text-mint">₹{[40, 50, 30][index]}/1k</p>
               </div>
             ))}
           </div>

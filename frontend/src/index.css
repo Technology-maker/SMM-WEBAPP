@@ -91,3 +91,69 @@ textarea {
 .light .skeleton {
   @apply bg-slate-200;
 }
+
+
+.sparkle-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.spark {
+  position: absolute;
+  color: #fde68a;
+  font-size: 16px;
+  text-shadow: 0 0 6px rgba(253, 230, 138, 0.8);
+  animation: sparkle-twinkle 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes sparkle-twinkle {
+
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.3) rotate(0deg);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(20deg);
+  }
+}
+
+.spark-1 {
+  left: -14px;
+  top: -6px;
+  animation-delay: 0s;
+}
+
+.spark-2 {
+  right: -18px;
+  top: 2px;
+  animation-delay: 0.6s;
+}
+
+.spark-3 {
+  left: 30%;
+  bottom: -14px;
+  animation-delay: 1.2s;
+}
+
+.spark-4 {
+  right: 20%;
+  bottom: -10px;
+  animation-delay: 0.3s;
+}
+
+.spark-5 {
+  left: 60%;
+  top: -16px;
+  animation-delay: 0.9s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spark {
+    animation: none;
+    opacity: 0.6;
+  }
+}
