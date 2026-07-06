@@ -256,7 +256,7 @@ const Sidebar = ({ open, onClose }) => {
 
             {/* Wordmark */}
             <span className="text-lg font-bold tracking-tight">
-              <span className="sb-word">SMM</span>
+              <span className="sb-word">BOOST GURU </span>
               <span
                 style={{
                   background: "linear-gradient(90deg, #a78bfa, #c4b5fd)",
@@ -265,7 +265,7 @@ const Sidebar = ({ open, onClose }) => {
                   backgroundClip: "text",
                 }}
               >
-                Pulse
+                SMM
               </span>
             </span>
           </NavLink>

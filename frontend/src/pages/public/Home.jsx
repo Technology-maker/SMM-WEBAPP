@@ -138,7 +138,7 @@ const Home = () => (
 
         {/* Wordmark */}
         <span className="text-xl font-black tracking-tight">
-          <span className="home-word">SMM</span>
+          <span className="home-word">BOOST GURU </span>
           <span
             style={{
               background: "linear-gradient(90deg, #a78bfa, #c4b5fd)",
@@ -147,7 +147,7 @@ const Home = () => (
               backgroundClip: "text",
             }}
           >
-            Pulse
+            SMM
           </span>
         </span>
       </Link>

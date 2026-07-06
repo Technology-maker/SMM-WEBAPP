@@ -4,7 +4,7 @@ const settingsSchema = new mongoose.Schema(
   {
     siteName: {
       type: String,
-      default: "SMM Pulse"
+      default: "BOOST GURU SMM"
     },
     currency: {
       type: String,

@@ -63,7 +63,7 @@ const Footer = () => {
               </svg>
             </div>
             <span className="text-[16px] font-semibold text-slate-100 tracking-tight">
-              SMM Pulse
+              BOOST GURU SMM
             </span>
           </div>
 

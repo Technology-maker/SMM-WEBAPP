@@ -1,4 +1,4 @@
-# SMMPulse
+## BOOST GURU SMM
 
 A full-stack SMM (Social Media Marketing) panel. Users buy social media growth services (followers, likes, views, etc.), fund their wallet via manual UPI transfer, and track orders — while admins manage services, providers, users, notices, and transactions from a dedicated dashboard.
 
