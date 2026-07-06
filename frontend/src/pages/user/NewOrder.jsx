@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Search, ChevronDown, Info, CreditCard, Send, Zap } from "lucide-react";
-import { getCategories, getServices } from "../../api/serviceAPI";
+import { getCategories, getServices, getService } from "../../api/serviceAPI";
 import { createOrder } from "../../api/orderAPI";
 import formatCurrency from "../../utils/formatCurrency";
 import toast from "react-hot-toast";
@@ -329,6 +329,28 @@ const NewOrder = () => {
     { keepPreviousData: true }
   );
 
+  /* read ?service=<id> from the URL (set by the Services page "Order Now" button) */
+  const preselectedId = useMemo(
+    () => new URLSearchParams(window.location.search).get("service"),
+    []
+  );
+  const appliedPreselect = useRef(false);
+  const preselectQ = useQuery(
+    ["service", preselectedId],
+    () => getService(preselectedId),
+    { enabled: !!preselectedId }
+  );
+  useEffect(() => {
+    if (appliedPreselect.current) return;
+    const svc = preselectQ.data?.data?.service;
+    if (svc) {
+      setCatId(svc.category?._id || "");
+      setSvcId(svc._id);
+      setQuantity(String(svc.minOrder));
+      appliedPreselect.current = true;
+    }
+  }, [preselectQ.data]);
+
   const cats = catsQ.data?.data?.categories || [];
   const svcs = svcsQ.data?.data?.services || [];
 
@@ -346,6 +368,21 @@ const NewOrder = () => {
   /* filtered lists */
   const filteredCats = cats.filter(c => c.name.toLowerCase().includes(catSearch.toLowerCase()));
   const filteredSvcs = svcs.filter(s => s.name.toLowerCase().includes(svcSearch.toLowerCase()));
+
+  /* auto-fill category + service when search narrows to a single match */
+  useEffect(() => {
+    if (!search.trim() || svcsQ.isLoading) return;
+    if (svcs.length === 1) {
+      const match = svcs[0];
+      if (match._id !== svcId) {
+        setSvcId(match._id);
+        setQuantity(String(match.minOrder));
+      }
+      if (match.category?._id && match.category._id !== catId) {
+        setCatId(match.category._id);
+      }
+    }
+  }, [svcs, search, svcsQ.isLoading]);
 
   /* close both dropdowns */
   const closeAll = () => { setCatOpen(false); setSvcOpen(false); };
@@ -428,14 +465,6 @@ const NewOrder = () => {
 
                 {catOpen && (
                   <div className="c-dropdown-box">
-                    <div className="c-dropdown-search">
-                      <input
-                        autoFocus
-                        placeholder="Search category…"
-                        value={catSearch}
-                        onChange={e => setCatSearch(e.target.value)}
-                      />
-                    </div>
 
                     {/* "All Categories" option */}
                     <div

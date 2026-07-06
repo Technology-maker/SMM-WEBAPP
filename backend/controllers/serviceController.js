@@ -1,11 +1,21 @@
 import Service from "../models/Service.js";
 import { ok } from "../utils/apiResponse.js";
+import mongoose from "mongoose";
 
 export const getServices = async (req, res, next) => {
   try {
     const filter = { isActive: true };
     if (req.query.category) filter.category = req.query.category;
-    if (req.query.search) filter.name = { $regex: req.query.search, $options: "i" };
+
+    if (req.query.search) {
+      const term = req.query.search.trim();
+      const or = [
+        { name: { $regex: term, $options: "i" } },
+        { providerServiceId: { $regex: term, $options: "i" } }
+      ];
+      if (mongoose.Types.ObjectId.isValid(term)) or.push({ _id: term });
+      filter.$or = or;
+    }
 
     const services = await Service.find(filter).populate("category", "name icon").sort({ name: 1 });
     ok(res, "Services fetched", { services });
