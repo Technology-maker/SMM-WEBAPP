@@ -116,12 +116,34 @@ export const getMyOrders = async (req, res, next) => {
 
     const [orders, total] = await Promise.all([
       Order.find(filter)
-        .populate("serviceId", "name rate")
+        .populate("serviceId", "name rate providerName")
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit),
       Order.countDocuments(filter)
     ]);
+
+    const SYNC_INTERVAL_MS = 3 * 60 * 1000; // 5 minutes
+    await Promise.all(
+      orders
+        .filter(o => o.providerOrderId && o.status !== "completed" &&
+          (!o.lastSyncedAt || Date.now() - o.lastSyncedAt.getTime() > SYNC_INTERVAL_MS))
+        .map(async (order) => {
+          const provider = getProvider(order.serviceId?.providerName);
+          if (!provider) return;
+          try {
+            const providerStatus = await provider.getOrderStatus(order.providerOrderId);
+            order.status = normalizeProviderStatus(providerStatus.status);
+            order.startCount = Number(providerStatus.start_count || order.startCount || 0);
+            order.remains = Number(providerStatus.remains || order.remains || 0);
+            order.lastSyncedAt = new Date();
+            await order.save();
+          } catch (error) {
+            order.providerError = `Status sync failed: ${error.message}`;
+            await order.save();
+          }
+        })
+    );
 
     ok(res, "Orders fetched", { orders, total, page, pages: Math.ceil(total / limit) || 1 });
   } catch (error) {
