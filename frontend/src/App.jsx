@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { Toaster } from "react-hot-toast";
 import AppRoutes from "./routes/AppRoutes";
+import { Analytics } from "@vercel/analytics/react"
 
 class ErrorBoundary extends Component {
   constructor(props) {
