@@ -16,7 +16,7 @@ const paginate = (req) => {
 export const getDashboardStats = async (req, res, next) => {
   try {
     const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 29);
     sevenDaysAgo.setHours(0, 0, 0, 0);
 
     const [

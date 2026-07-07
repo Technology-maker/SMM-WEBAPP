@@ -222,7 +222,7 @@ const Login = () => {
 
             {/* Wordmark */}
             <span className="text-lg font-bold tracking-tight">
-              <span className="logo-word">SMM</span>
+              <span className="logo-word">BOOST GURU </span>
               <span
                 style={{
                   background: "linear-gradient(90deg, #a78bfa, #c4b5fd)",
@@ -231,7 +231,7 @@ const Login = () => {
                   backgroundClip: "text",
                 }}
               >
-                Pulse
+                SMM
               </span>
             </span>
           </Link>
