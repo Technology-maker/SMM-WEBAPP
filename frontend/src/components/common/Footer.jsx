@@ -132,7 +132,7 @@ const Footer = () => {
         {/* Copyright */}
         <span className="text-[12px] text-slate-700">
           © 2026{" "}
-          <span className="text-violet-600 font-medium">SMM Pulse Panel</span>.
+          <span className="text-violet-600 font-medium">Boost Guru SMM</span>.
           {" "}All rights reserved.
         </span>
 

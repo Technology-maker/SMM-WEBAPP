@@ -13,8 +13,14 @@ const ManageOrders = () => {
   const queryClient = useQueryClient();
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState(null);
-  const { data, isLoading } = useQuery("admin:orders", () => adminList("orders"));
+  const [page, setPage] = useState(1); // ✅ NEW: current page
+  const { data, isLoading } = useQuery(
+    ["admin:orders", page],
+    () => adminList("orders", { page, limit: 20 }),
+    { keepPreviousData: true }
+  );
   const orders = data?.data?.orders || [];
+  const totalPages = data?.data?.pages || 1; // ✅ NEW
 
   const mutation = useMutation((payload) => adminUpdate("orders", payload._id, payload), {
     onSuccess: () => {
@@ -78,6 +84,24 @@ const ManageOrders = () => {
     <div className="space-y-5">
       <h1 className="text-2xl font-bold">Manage Orders</h1>
       <Table columns={columns} data={orders} loading={isLoading} />
+      {/* ✅ NEW: page change controls */}
+      <div className="flex items-center justify-between">
+        <button
+          className="btn-secondary px-4 py-2"
+          disabled={page <= 1}
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+        >
+          Previous
+        </button>
+        <span className="text-sm text-slate-400">Page {page} of {totalPages}</span>
+        <button
+          className="btn-secondary px-4 py-2"
+          disabled={page >= totalPages}
+          onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+        >
+          Next
+        </button>
+      </div>
 
       <Modal open={modal} title="Update order" onClose={() => setModal(false)}>
         {form && (

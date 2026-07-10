@@ -14,8 +14,14 @@ const ManageUsers = () => {
   const queryClient = useQueryClient();
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState(emptyForm);
-  const { data, isLoading } = useQuery("admin:users", () => adminList("users"));
+  const [page, setPage] = useState(1); // ✅ NEW: current page
+  const { data, isLoading } = useQuery(
+    ["admin:users", page],
+    () => adminList("users", { page, limit: 20 }),
+    { keepPreviousData: true }
+  );
   const users = data?.data?.users || [];
+  const totalPages = data?.data?.pages || 1; // ✅ NEW
 
   const saveMutation = useMutation((payload) => payload._id ? adminUpdate("users", payload._id, payload) : adminCreate("users", payload), {
     onSuccess: () => {
@@ -62,6 +68,24 @@ const ManageUsers = () => {
         <button className="btn-primary" onClick={() => { setForm(emptyForm); setModal(true); }}><Plus size={17} /> Add User</button>
       </div>
       <Table columns={columns} data={users} loading={isLoading} />
+      {/* ✅ NEW: page change controls */}
+      <div className="flex items-center justify-between">
+        <button
+          className="btn-secondary px-4 py-2"
+          disabled={page <= 1}
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+        >
+          Previous
+        </button>
+        <span className="text-sm text-slate-400">Page {page} of {totalPages}</span>
+        <button
+          className="btn-secondary px-4 py-2"
+          disabled={page >= totalPages}
+          onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+        >
+          Next
+        </button>
+      </div>
       <Modal open={modal} title={form._id ? "Edit user" : "Add user"} onClose={() => setModal(false)}>
         <form onSubmit={submit} className="space-y-3">
           <input className="field" placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
