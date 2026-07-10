@@ -32,6 +32,7 @@ const App = () => (
   <ErrorBoundary>
     <AppRoutes />
     <Toaster position="top-right" toastOptions={{ style: { background: "#181826", color: "#fff", border: "1px solid #303044" } }} />
+    <Analytics />
   </ErrorBoundary>
 );
 
