@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { Toaster } from "react-hot-toast";
 import AppRoutes from "./routes/AppRoutes";
+import ChatWidget from "./components/common/ChatWidget";
 import { Analytics } from "@vercel/analytics/react"
 
 class ErrorBoundary extends Component {
@@ -31,6 +32,7 @@ class ErrorBoundary extends Component {
 const App = () => (
   <ErrorBoundary>
     <AppRoutes />
+    <ChatWidget />
     <Toaster position="top-right" toastOptions={{ style: { background: "#181826", color: "#fff", border: "1px solid #303044" } }} />
     <Analytics />
   </ErrorBoundary>

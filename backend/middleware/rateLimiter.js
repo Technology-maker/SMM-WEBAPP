@@ -26,3 +26,13 @@ export const apiLimiter = rateLimit({
   legacyHeaders: false,
   handler
 });
+
+// Chat fans out to paid AI providers (Cerebras/Groq/Google/Mistral) per request,
+// so it needs a tighter cap than general API traffic.
+export const chatLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 6,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler
+});
