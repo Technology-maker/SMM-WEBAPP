@@ -55,7 +55,7 @@ async function callProvider(provider, messages) {
                 Authorization: `Bearer ${provider.key}`,
                 "Content-Type": "application/json",
             },
-            timeout: 15000,
+            timeout: 8000,
         }
     );
     let content = response.data.choices[0].message.content;

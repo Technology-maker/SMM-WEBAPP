@@ -68,12 +68,19 @@ const ChatWidget = () => {
         try {
             const { data } = await axios.post("/chat", {
                 message: userMsg.content,
-                history: newMessages.slice(-6),
+                history: messages.slice(-6),
             });
             const { cleanText, path } = extractRedirect(data.data.reply);
             setMessages((prev) => [...prev, { role: "assistant", content: cleanText, redirect: path }]);
-        } catch {
-            setMessages((prev) => [...prev, { role: "assistant", content: "Sorry, something went wrong." }]);
+        } catch (err) {
+            const status = err.response?.status;
+            const msg =
+                status === 429
+                    ? "You're sending messages too fast — please wait a bit and try again."
+                    : status === 503
+                        ? "AI chat is temporarily unavailable, try again shortly."
+                        : "Connection issue — please check your internet and try again.";
+            setMessages((prev) => [...prev, { role: "assistant", content: msg }]);
         } finally {
             setLoading(false);
         }
