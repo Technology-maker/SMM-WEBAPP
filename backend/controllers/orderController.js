@@ -7,13 +7,13 @@ import { ok, fail } from "../utils/apiResponse.js";
 
 const calculateCharge = (rate, quantity) => Number(((rate * quantity) / 1000).toFixed(2));
 
-const normalizeProviderStatus = (status) => {
+const normalizeProviderStatus = (status, fallback = "pending") => {
   const value = String(status || "").toLowerCase();
   if (value.includes("complete")) return "completed";
   if (value.includes("process") || value.includes("progress")) return "processing";
   if (value.includes("cancel")) return "cancelled";
   if (value.includes("partial")) return "partial";
-  return "pending";
+  return fallback;
 };
 
 export const createOrder = async (req, res, next) => {
@@ -93,7 +93,7 @@ export const createOrder = async (req, res, next) => {
     });
 
     const populatedOrder = await Order.findById(order._id).populate("serviceId", "name rate");
-    ok(res, providerError || "Order created successfully", { order: populatedOrder, balance: updatedUser.balance }, 201);
+    ok(res, providerError || "Order created successfully 👍", { order: populatedOrder, balance: updatedUser.balance }, 201);
   } catch (error) {
     next(error);
   }
@@ -123,17 +123,17 @@ export const getMyOrders = async (req, res, next) => {
       Order.countDocuments(filter)
     ]);
 
-    const SYNC_INTERVAL_MS = 3 * 60 * 1000; // 5 minutes
+    const SYNC_INTERVAL_MS = 3 * 60 * 1000; // 3 minutes
     await Promise.all(
       orders
-        .filter(o => o.providerOrderId && o.status !== "completed" &&
+        .filter(o => o.providerOrderId && o.status !== "completed" && o.status !== "cancelled" &&
           (!o.lastSyncedAt || Date.now() - o.lastSyncedAt.getTime() > SYNC_INTERVAL_MS))
         .map(async (order) => {
           const provider = getProvider(order.serviceId?.providerName);
           if (!provider) return;
           try {
             const providerStatus = await provider.getOrderStatus(order.providerOrderId);
-            order.status = normalizeProviderStatus(providerStatus.status);
+            order.status = normalizeProviderStatus(providerStatus.status, order.status);
             order.startCount = Number(providerStatus.start_count || order.startCount || 0);
             order.remains = Number(providerStatus.remains || order.remains || 0);
             order.lastSyncedAt = new Date();
@@ -160,10 +160,11 @@ export const getOrderById = async (req, res, next) => {
     const order = await Order.findOne(filter).populate("serviceId", "name rate providerName").populate("userId", "name email");
     if (!order) return fail(res, 404, "Order not found");
 
-    const SYNC_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+    const SYNC_INTERVAL_MS = 4 * 60 * 1000; // 4 minutes
     const shouldSync =
       order.providerOrderId &&
       order.status !== "completed" &&
+      order.status !== "cancelled" &&
       (!order.lastSyncedAt || Date.now() - order.lastSyncedAt.getTime() > SYNC_INTERVAL_MS);
 
     if (shouldSync) {
@@ -172,7 +173,7 @@ export const getOrderById = async (req, res, next) => {
       if (provider) {
         try {
           const providerStatus = await provider.getOrderStatus(order.providerOrderId);
-          order.status = normalizeProviderStatus(providerStatus.status);
+          order.status = normalizeProviderStatus(providerStatus.status, order.status);
           order.startCount = Number(providerStatus.start_count || order.startCount || 0);
           order.remains = Number(providerStatus.remains || order.remains || 0);
           order.lastSyncedAt = new Date();

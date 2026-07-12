@@ -12,7 +12,7 @@ const settingsSchema = new mongoose.Schema(
     },
     minDeposit: {
       type: Number,
-      default: 100
+      default: 20
     },
     maintenanceMode: {
       type: Boolean,

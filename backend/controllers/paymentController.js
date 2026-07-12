@@ -1,6 +1,5 @@
 import Settings from "../models/Settings.js";
 import Transaction from "../models/Transaction.js";
-import User from "../models/User.js";
 import { ok, fail } from "../utils/apiResponse.js";
 
 
@@ -12,7 +11,7 @@ export const createDeposit = async (req, res, next) => {
     const utr = req.body.utr?.trim() || null; // ✅ NEW
 
     const settings = await Settings.findOne();
-    const minDeposit = settings?.minDeposit || 100;
+    const minDeposit = settings?.minDeposit || 50;
 
     if (amount < minDeposit) {
       return fail(res, 400, `Minimum deposit is ${minDeposit}`);
@@ -96,6 +95,16 @@ export const getMyTransactions = async (req, res, next) => {
       page,
       pages: Math.ceil(total / limit) || 1
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const getDepositSettings = async (req, res, next) => {
+  try {
+    const settings = await Settings.findOne();
+    ok(res, "Deposit settings fetched", { minDeposit: settings?.minDeposit ?? 100 });
   } catch (error) {
     next(error);
   }

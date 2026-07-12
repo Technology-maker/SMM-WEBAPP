@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "react-query";
-import { Search, X, Clock, TrendingDown, Package, Filter, ChevronRight, Info } from "lucide-react";
+import { Search, X, TrendingDown, Package, Filter, ChevronRight, Info } from "lucide-react";
 import { getCategories, getServices } from "../../api/serviceAPI";
 import formatCurrency from "../../utils/formatCurrency";
 

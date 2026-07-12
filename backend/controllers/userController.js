@@ -1,9 +1,6 @@
 import User from "../models/User.js";
 import Order from "../models/Order.js";
 import Transaction from "../models/Transaction.js";
-import bcrypt from "bcryptjs";
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
 import { ok, fail } from "../utils/apiResponse.js";
 import { sendOTPMail } from "../Emailverify/sendOtp.js";
 import { sendContactMail } from "../Emailverify/sendContactMail.js";
@@ -92,10 +89,10 @@ export const Contactus = async (req, res) => {
 
   try {
     await sendContactMail({ name, email, subject, message });
-
-    res.status(200).json({ success: true, message: "Message sent successfully!" });
+    res.status(200).json({ success: true, message: "Message sent successfully 🎉" });
   } catch (error) {
-    res.status(500).json({ error, success: false, message: "Error sending message." });
+    console.error("Contact form send failed:", error.message);
+    res.status(500).json({ success: false, message: "Error sending message." });
   }
 };
 

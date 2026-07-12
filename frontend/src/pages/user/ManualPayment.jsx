@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import toast from "react-hot-toast";
 import { QrCode, ArrowRight, Hash, IndianRupee, ArrowLeft } from "lucide-react";
-import { submitManualPayment } from "../../api/paymentAPI";
+import { submitManualPayment, getDepositSettings } from "../../api/paymentAPI";
 
 const ManualPayment = ({ title = "UPI / QR Payment", method = "upi", qrImage = "/qr-code.png" }) => {
     const navigate = useNavigate();
@@ -18,9 +18,12 @@ const ManualPayment = ({ title = "UPI / QR Payment", method = "upi", qrImage = "
         }
     });
 
+    const { data: settingsData } = useQuery("payment:deposit-settings", getDepositSettings);
+    const minDeposit = settingsData?.data?.minDeposit ?? 100;
+
     const submit = (e) => {
         e.preventDefault();
-        if (!amount || Number(amount) < 1) return toast.error("Enter a valid amount");
+        if (!amount || Number(amount) < minDeposit) return toast.error(`Minimum deposit is ₹${minDeposit}`);
         if (!utr.trim()) return toast.error("Enter your UTR / Transaction ID");
         mutation.mutate({ amount: Number(amount), utr: utr.trim() });
     };
@@ -37,7 +40,7 @@ const ManualPayment = ({ title = "UPI / QR Payment", method = "upi", qrImage = "
 
     return (
         <div className="min-h-screen flex items-center justify-center  px-4 relative overflow-hidden">
-            
+
 
             <div style={{ width: "100%", maxWidth: 440, position: "relative", animation: "slideUp 0.5s cubic-bezier(0.16,1,0.3,1) both" }}>
                 <style>{`
@@ -103,7 +106,7 @@ const ManualPayment = ({ title = "UPI / QR Payment", method = "upi", qrImage = "
                         </div>
 
                         <p style={{ fontSize: 12, color: "#475569", marginBottom: 20, marginLeft: 4 }}>
-                           Note - Minimum Deposit  ₹50  (Enter your 12-digit UTR number and Submit Payment.)
+                            Note - Minimum Deposit  ₹{minDeposit}  (Enter your 12-digit UTR number and Submit Payment.)
                         </p>
 
                         <button type="submit" disabled={mutation.isLoading} className="mp-btn" style={{ width: "100%", borderRadius: 14, padding: "14px 0", color: "#fff", fontWeight: 600, fontSize: 15, border: "none", cursor: mutation.isLoading ? "not-allowed" : "pointer", background: mutation.isLoading ? "rgba(124,58,237,0.4)" : "linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
