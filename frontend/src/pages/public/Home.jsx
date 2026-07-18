@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, BarChart3, ShieldCheck, Sparkles, WalletCards, Zap } from "lucide-react";
 import Footer from "../../components/common/Footer";
+import HowItWorks from "../../components/common/HowItWorks";
+import { StatsMarquee } from "../../components/common/StatsMarquee";
+import { Features } from "../../components/common/Features";
+import { Testimonials } from "../../components/common/Testimonials";
 
 const categories = ["Instagram", "YouTube", "TikTok", "Facebook", "Telegram", "X"];
 
@@ -214,21 +218,11 @@ const Home = () => (
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-8">
-        <div className="grid gap-4 md:grid-cols-3">
-          {[
-            { title: "Wallet first", icon: WalletCards, text: "Deposit funds, verify payments, and keep every order debit visible." },
-            { title: "Provider ready", icon: Sparkles, text: "Peakerr API integration queues safely when provider keys are absent." },
-            { title: "Admin secure", icon: ShieldCheck, text: "JWT httpOnly cookie auth, admin guards, Helmet headers, and rate limits." }
-          ].map(({ title, icon: Icon, text }) => (
-            <div key={title} className="glass rounded-lg p-5">
-              <Icon className="text-mint" />
-              <h2 className="mt-4 text-lg font-bold">{title}</h2>
-              <p className="mt-2 text-sm text-slate-400">{text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <HowItWorks />
+      <StatsMarquee />
+      <Features />
+      <Testimonials />
+
 
       <section className="mx-auto max-w-7xl px-4 py-8">
         <div className="flex flex-wrap gap-3">
