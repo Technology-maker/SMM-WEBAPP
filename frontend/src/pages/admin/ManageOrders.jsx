@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
-import { Save, Trash2, ExternalLink } from "lucide-react"; // Added ExternalLink icon
+import { Save, Trash2, ExternalLink, Search } from "lucide-react"; // Added ExternalLink icon
 import { adminDelete, adminList, adminUpdate } from "../../api/serviceAPI";
 import Table from "../../components/common/Table";
 import Modal from "../../components/common/Modal";
@@ -14,12 +14,26 @@ const ManageOrders = () => {
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState(null);
   const [page, setPage] = useState(1); // ✅ NEW: current page
+  const [searchTerm, setSearchTerm] = useState("");
   const { data, isLoading } = useQuery(
     ["admin:orders", page],
     () => adminList("orders", { page, limit: 20 }),
     { keepPreviousData: true }
   );
   const orders = data?.data?.orders || [];
+  const filteredOrders = orders.filter((order) => {
+    const term = searchTerm.toLowerCase();
+    if (!term) return true;
+
+    return [
+      order.userId?.email,
+      order.serviceId?.name,
+      order.status,
+      order.link,
+      order.providerOrderId,
+      order._id
+    ].some((value) => String(value || "").toLowerCase().includes(term));
+  });
   const totalPages = data?.data?.pages || 1; // ✅ NEW
 
   const mutation = useMutation((payload) => adminUpdate("orders", payload._id, payload), {
@@ -82,8 +96,21 @@ const ManageOrders = () => {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold">Manage Orders</h1>
-      <Table columns={columns} data={orders} loading={isLoading} />
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <h1 className="text-2xl font-bold">Manage Orders</h1>
+        <div className="relative w-full md:max-w-sm">
+          <input
+            className="field w-full pl-10"
+            placeholder="Search orders"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
+            }}
+          />
+        </div>
+      </div>
+      <Table columns={columns} data={filteredOrders} loading={isLoading} />
       {/* ✅ NEW: page change controls */}
       <div className="flex items-center justify-between">
         <button

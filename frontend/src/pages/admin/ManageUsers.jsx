@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
-import { Plus, Save, Trash2 } from "lucide-react";
+import { Plus, Save, Trash2, Search } from "lucide-react";
 import { adminCreate, adminDelete, adminList, adminUpdate } from "../../api/serviceAPI";
 import Table from "../../components/common/Table";
 import Modal from "../../components/common/Modal";
@@ -15,12 +15,19 @@ const ManageUsers = () => {
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [page, setPage] = useState(1); // ✅ NEW: current page
+  const [searchTerm, setSearchTerm] = useState("");
   const { data, isLoading } = useQuery(
     ["admin:users", page],
     () => adminList("users", { page, limit: 20 }),
     { keepPreviousData: true }
   );
   const users = data?.data?.users || [];
+  const filteredUsers = users.filter((user) => {
+    const term = searchTerm.toLowerCase();
+    if (!term) return true;
+
+    return [user.name, user.email, user.role, user._id].some((value) => String(value || "").toLowerCase().includes(term));
+  });
   const totalPages = data?.data?.pages || 1; // ✅ NEW
 
   const saveMutation = useMutation((payload) => payload._id ? adminUpdate("users", payload._id, payload) : adminCreate("users", payload), {
@@ -63,11 +70,24 @@ const ManageUsers = () => {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <h1 className="text-2xl font-bold">Manage Users</h1>
-        <button className="btn-primary" onClick={() => { setForm(emptyForm); setModal(true); }}><Plus size={17} /> Add User</button>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative w-full sm:w-64">
+            <input
+              className="field w-full pl-10"
+              placeholder="Search users"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPage(1);
+              }}
+            />
+          </div>
+          <button className="btn-primary" onClick={() => { setForm(emptyForm); setModal(true); }}><Plus size={17} /> Add User</button>
+        </div>
       </div>
-      <Table columns={columns} data={users} loading={isLoading} />
+      <Table columns={columns} data={filteredUsers} loading={isLoading} />
       {/* ✅ NEW: page change controls */}
       <div className="flex items-center justify-between">
         <button

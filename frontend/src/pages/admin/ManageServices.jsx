@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
-import { Plus, Save, Trash2 } from "lucide-react";
+import { Plus, Save, Trash2, Search } from "lucide-react";
 import { adminCreate, adminDelete, adminList, adminUpdate } from "../../api/serviceAPI";
 import Table from "../../components/common/Table";
 import Modal from "../../components/common/Modal";
@@ -14,9 +14,23 @@ const ManageServices = () => {
   const queryClient = useQueryClient();
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState(emptyForm);
+  const [searchTerm, setSearchTerm] = useState("");
   const { data, isLoading } = useQuery("admin:services", () => adminList("services"));
   const categoriesQuery = useQuery("admin:categories", () => adminList("categories"));
   const services = data?.data?.services || [];
+  const filteredServices = services.filter((service) => {
+    const term = searchTerm.toLowerCase();
+    if (!term) return true;
+
+    return [
+      service.name,
+      service.category?.name,
+      service.providerName,
+      service.providerServiceId,
+      service.description,
+      service._id
+    ].some((value) => String(value || "").toLowerCase().includes(term));
+  });
   const categories = categoriesQuery.data?.data?.categories || [];
 
   const saveMutation = useMutation((payload) => payload._id ? adminUpdate("services", payload._id, payload) : adminCreate("services", payload), {
@@ -63,11 +77,21 @@ const ManageServices = () => {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <h1 className="text-2xl font-bold">Manage Services</h1>
-        <button className="btn-primary" onClick={() => { setForm({ ...emptyForm, category: categories[0]?._id || "" }); setModal(true); }}><Plus size={17} /> Add Service</button>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative w-full sm:w-64">
+            <input
+              className="field w-full pl-10"
+              placeholder="Search services"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <button className="btn-primary" onClick={() => { setForm({ ...emptyForm, category: categories[0]?._id || "" }); setModal(true); }}><Plus size={17} /> Add Service</button>
+        </div>
       </div>
-      <Table columns={columns} data={services} loading={isLoading} />
+      <Table columns={columns} data={filteredServices} loading={isLoading} />
       <Modal open={modal} title={form._id ? "Edit service" : "Add service"} onClose={() => setModal(false)}>
         <form onSubmit={submit} className="grid gap-3 md:grid-cols-2">
           <input className="field md:col-span-2" placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
